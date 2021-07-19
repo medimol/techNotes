@@ -16,6 +16,11 @@ Destination port: 25565
 ```
 25565 is the initial server operating port of Minecraft server.
 
+#### SSH Login
+```sh
+SSH -i Path-to-the-key opc@ipaddress
+```
+ops is the account name for oracle linux.
 #### Firewall Rules
 Ingress rules should align to OS firewall rules.
 
@@ -61,3 +66,15 @@ List active screens.
 screen -r screen_name
 ```
 Get in to the screen.
+
+#### Update Server
+1. Stop server.
+2. Back up
+    - banned-ips.json
+    - banned-players.json
+    - ops.json
+    - server.propeties
+    - world/
+3. Wget new server.jar
+4. Delete old server.jar
+5. Up server

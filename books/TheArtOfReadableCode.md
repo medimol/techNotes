@@ -19,3 +19,5 @@ Add unit to the name. "_ms", "_sec"
 Add "plaintext_", "unescaped_", "unsafe_" to variables that is critival with security or bug.
 
 `Ctrl-p` with complement in vi
+
+## Names Won't be Misunderstood
