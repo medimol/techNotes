@@ -1,11 +1,12 @@
 # git
-## revert
+## Commands
+### revert
 ``` sh
 git revert commitId
 ```
 Make a commit to delete changes made by commit of commitId.
 
-## cherry-pick
+### cherry-pick
 ``` sh
 git cherry-pick commitId
 ```
@@ -14,21 +15,21 @@ Partially merge by commit from other branch.
 ## Commit Message
 
 ### Prefixes
-- **Fix**: fix bug (Hotfix if critical bug)
-- **Feat**: add new feature or file (Add)
-- **Update**: correction of feature, not bug
-- **Change**: change in specification
-- **Clean**: refactor (Refactor, Improve)
-- **Disable**: disable feature
-- **Remove**: delete file (Delete)
-- **Move**: move file
-- **Upgrade**: upgrade version
-- **Revert**: undo change
-- **Docs**: Change of document
-- **Style**: Format fix
-- **Perf**: performance improvement
-- **Test**: Fix according to test
-- **Chore**: Commit of auto generated file
+- "**Fix**": fix bug (Hotfix if critical bug)
+- "**Add**": add new feature or file (Feat)
+- "**Update**": correction of feature, not bug
+- "**Change**": change in specification
+- "**Clean**": refactor (Refactor, Improve)
+- "**Disable**": disable feature
+- "**Remove**": delete file (Delete)
+- "**Move**": move file
+- "**Upgrade**": upgrade version
+- "**Revert**": undo change
+- "**Docs**": change of document
+- "**Style**": format fix
+- "**Perf**": performance improvement
+- "**Test**": fix according to test
+- "**Chore**": commit of auto generated file
 
 ### Tips
 - Rebase commits if possible to squash by feature
