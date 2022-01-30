@@ -61,8 +61,13 @@ bin/
 
 # 
 ```
+## Branch
+### Name
+```
+{prefix}/{Issue#}-{name_with_snake_case}
+```
 
-## Change Branch Name
+### Change Branch Name
 ```
 git branch -m <old branch name> <new branch name>
 git branch -m <new branch name of present branch>
