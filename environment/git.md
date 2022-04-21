@@ -73,4 +73,3 @@ bin/
 git branch -m <old branch name> <new branch name>
 git branch -m <new branch name of present branch>
 ```
->>>>>>> origin/main:environment/git.md
