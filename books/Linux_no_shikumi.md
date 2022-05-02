@@ -669,3 +669,16 @@ CPU使用時間の多くはメモリorキャッシュメモリからのデータ
 - `$ time make -j16 >/dev/null 2>&1`
 
 `$ cat /sys/devices/system/cpu/cpu{#}/topology/thread_siblings_list`: CPU{#}のハイパースレッドのペアとなるもう一つのスレッドを確認．e.g. cpu0では，cpu1が同じコア．
+
+### 第7章 ファイルシステム
+
+
+#### Linuxのファイルシステム
+
+#### データとメタデータ
+
+#### 容量制限
+
+#### ファイルシステムの不整合
+
+#### ジャーナリング
