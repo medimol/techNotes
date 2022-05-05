@@ -4,7 +4,7 @@ Manage notes mainly about technologies
 ## Policy
 I cannot understand and remember at once.
 Do not get frustrated.
-Take time and check notes until you no longer necessary. 
+Take time and check notes until you no longer necessary.
 
 ## Rules
 ### Git
@@ -18,6 +18,7 @@ Commit Prefixes
 - "Update": Addition to the note
 - "Fix": Fix error
 - "Clean": Refactor the note
+- "Finish": Finish reading the book and add the date
 
 Commit message will look like
 `{Prefix} {File_name} {abstract of commit details}`
