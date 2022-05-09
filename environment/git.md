@@ -47,6 +47,9 @@ Partially merge by commit from other branch.
 
 Body should include not HOW but WHAT and WHY
 
+Able to link commit and issue in GitHub by adding `#{IssueNumber}` in commit message
+- e.g. `Add #{IssueNumber} hoge`
+
 ## gitignore
 ```
 # comment
@@ -65,9 +68,8 @@ bin/
 ## Branch
 ### Name
 ```
-{prefix}/#{IssueNumber}-{name_with_snake_case}
+{prefix}/{Issue#}-{name_with_snake_case}
 ```
-Able to link commit and issue in GitHub by adding `#{IssueNumber}` in commit message
 
 ### Change Branch Name
 ```
