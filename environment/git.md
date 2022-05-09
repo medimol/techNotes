@@ -65,8 +65,9 @@ bin/
 ## Branch
 ### Name
 ```
-{prefix}/{Issue#}-{name_with_snake_case}
+{prefix}/#{IssueNumber}-{name_with_snake_case}
 ```
+Able to link commit and issue in GitHub by adding `#{IssueNumber}` in commit message
 
 ### Change Branch Name
 ```
