@@ -253,3 +253,33 @@ SSHで対処できないことへの対処
 
 ダイナミックIPアドレスへの対処
 - ダイナミックDNS
+
+### 第4章 OpenSSHをインストールする
+#### 4-1 SSHにもいろいろある
+3つの系統
+- SSH Secure Shell (SSH1, SSH2)
+    - OSS (商用利用はライセンス費用発生) by SSH Communications Security社
+- OpenSSH
+    - OSS (SSH1を元にしたSSH2と同じ機能で，GPLライセンス(GNU General Public License))
+- LSH
+    - GNUライセンス
+    - SSH2.0プロトコル専用のソフトウェア
+
+OpenSSH
+- OpenSSH Server: サーバ用のソフト
+    - 設定は"/etc/ssh/sshd_config"から
+- OpenSSH Client: クライアント用をソフト
+    - 設定は"/etc/ssh/ssh_config"
+
+SSHの確認
+- `$ rpm -q -a | grep openss`
+
+最新版(ソース)をインストールする
+- OpenSSHの前にOpenSSLをインストール
+    - "http://www.openssl.org/"
+    1. 展開 `$ tar xvf opnessl-0.9.7c-tar.gz`し，そこへ移動
+    2. コンパイル `$ ./configure`, `make`, `make test`
+    3. インストール `$ sudo make install`
+- OpenSSHをインストール
+    - "http://www.openssh.org/", "http://www.openssh.org/ja/"
+    - OpenSSLと同様に展開，コンパイル，インストール
