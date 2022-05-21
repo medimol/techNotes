@@ -283,3 +283,23 @@ SSHの確認
 - OpenSSHをインストール
     - "http://www.openssh.org/", "http://www.openssh.org/ja/"
     - OpenSSLと同様に展開，コンパイル，インストール
+
+#### 4-3 WindowsでOpenSSHを使うためにCygwinをインストールする
+Windowsのファイルシステム
+- FAT or NTFS
+- ディスクのプロパティから確認できる
+- CygwinはNTFSの方が良い
+
+### 第5章 OpenSSHサーバ/クライアントの設定を行う
+#### 5-1 OpenSSHサーバの設定をする
+"sshd_config"による設定(Linux)
+- `Port 22`: 使用するポート番号の指定(22がウェルノウンポート)
+- `Protocol 2,1`: 使用するSSHプロトコルの指定(2がダメだったら1)
+- `ListenAddress 0.0.0.0`: 接続可能なアドレス(ネットワークカード)の指定(0.0.0.0は全てという指定)
+    - IPアドレスごとに受け付けるポートを変更することも可能(e.g. 127.168.0.2:2568)
+- `HostKey /etc...`: 秘密鍵の名前と場所の指定(SSH1とSSH2のプロトコルごとに用意されている)
+    - rootのみで読めるように権限を設定する．
+- `KeyRegenerationInterval 3600`: SSHプロトコル1で使用するサーバ鍵の再生成までの間隔(秒数)
+    - 0で再生成されなくなる
+- `ServerKeyBits 768`: SSH1サーバ鍵のビット数
+- `SyslogFacility AUTH`: ログのファシリティ指定
