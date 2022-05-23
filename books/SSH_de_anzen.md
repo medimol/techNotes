@@ -303,3 +303,36 @@ Windowsのファイルシステム
     - 0で再生成されなくなる
 - `ServerKeyBits 768`: SSH1サーバ鍵のビット数
 - `SyslogFacility AUTH`: ログのファシリティ指定
+- `LogLevel INFO`: Syslogに送られるログのレベルを指定(QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG; 後者になるにつれ多くのログを収集)
+- `LoginGraceTime 120`: アクセスからログイン(認証成功)までの制限時間を秒数で指定(0で無制限)
+- `PermitRootLogin no`: rootアカウントでのログインを可能にするかどうか．yesのが良い．yes/no以外にオプションでの指定ができる
+- `StrictModes yes`: クライアントとサーバとのファイルやディレクトリのパーミッションを確認するかどうか．yesのがよい．
+- `RSAAuthentication yes`: RSA認証での接続を許可するかどうか．SSHプロトコル1を使用しているときに適応
+- `PubkeyAuthentication yes`: 公開鍵認証での接続を許可するかどうか．SSHプロトコル2を使用しているときに適応
+- `AuthorizedKeysFile .ssh/authorized_keys`: SSHのユーザー認証で使用する公開鍵のディレクトリとファイル名を指定
+- `RhostsAuthentication no`: rhosts認証を許可するか．noのがよい
+- `IgnoreRhosts yes`: rhosts関連のファイルを無視するかどうか．
+- `RhostsRSAAuthentication no`: rhosts RSA認証を許可するかどうか．noのがよい
+- `HostbasedAuthentication no`: ホストベース認証の許可
+- `IgnoreUserKnownHosts no`: rhosts RSA認証を使うときに使用するKnown_hostsファイルを無視するかどうかを選択
+- `PasswordAuthentication no`: パスワード認証を許可するかどうか
+- `PermitEmptyPasswords no`: 空のパスワードを持つユーザーに接続を許可するかどうか．noがよい
+- チャレンジレスポンス認証について
+- Kerberos認証について
+- `X11Forwarding no`: X11のポート転送を許可するかどうか
+- `X11DisplayOffset 10`: X11の転送を行ったときのディスプレイ番号を指定
+- `PrintMod yes`: ログイン時に"/etc/motd"の内容を表示するかどうかの選択
+- `PrintLastLog yes`: 前回の接続時間等をログイン時に表示するか
+- `KeepAlive yes`: キープアライブメッセージを送るかどうか
+- `UseLogin no`: loginプログラムを使用するかどうかを選択，これがyesだとX11転送は許可されない
+- `UsePrivilegeSeparation yes`: root権限を分離するか
+- `PermitUserEnvironment no`: ユーザーの環境変数変更を許可するか
+- `Compression yes`: データを圧縮してやり取りするかどうか
+- `MaxStartups 10`: 認証がなされていない段階の接続を，サーバがどれだけ受け付けるかの指定
+    - sshdに対する接続要求をいくつまで認めるか
+- `UseDNS yes`: クライアントのIPアドレスを逆引きでチェックするか(DNS偽装のチェック)
+- `Subsystem sftp /usr/sbin/sftp-sever`: 外部システムの設定
+    - 一般的にsftp-serverは設定しておいた方がよい
+
+設定の反映
+- `$ killall -HUP sshd`
