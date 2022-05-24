@@ -336,3 +336,28 @@ Windowsのファイルシステム
 
 設定の反映
 - `$ killall -HUP sshd`
+
+#### 5-2 OpenSSHクライアントの設定をする
+"ssh_config"による設定
+- ".ssh/config"は個々のユーザーの設定(こっちのが優先度は高い)
+
+ユーザー認証用の公開鍵・秘密鍵を作成する
+- `$ /user/bin/ssh-keygen -t rsa`
+    - パスフレーズ入力
+    - "/user/.ssh/"以下に，"id_rsa"と"id_rsa.pub"ができる．
+
+公開鍵をSSHサーバーに登録(ディスクで)
+- "/user/.ssh/"を作る
+- 公開鍵をディレクトリに収める
+- 権限変更と登録
+```sh
+$ chmod 744 ~/.ssh
+$ cd .ssh
+$ cat id_rsa.pub >> authorized_keys
+$ chmod 600 authorized_keys
+```
+
+windowsのSSHサーバーに公開鍵を送付するためには
+- windowsでは"."から始まるフォルダを作成できない．
+- FTPクライアントを用いるとできる
+- OpenSSHで生成するならいらない
