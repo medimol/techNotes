@@ -361,3 +361,15 @@ windowsのSSHサーバーに公開鍵を送付するためには
 - windowsでは"."から始まるフォルダを作成できない．
 - FTPクライアントを用いるとできる
 - OpenSSHで生成するならいらない
+
+#### 5-3 SSHサーバが自動的に立ち上がるようにする
+sshdが起動しているかの確認
+- `$ ps ax | grep sshd`
+- sshdがあればOK
+
+sshdの起動
+- `$ /etc/rc.d/init.d/sshd start`
+
+自動起動の設定
+- `$ chkconfig --lebel 2345 sshd on`
+    - 設定を解除したい場合は"on"を"off"に
