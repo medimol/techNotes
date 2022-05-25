@@ -1,7 +1,7 @@
 # SSHで安全なリモートアクセスを構築する
 榊原 大輔. 株式会社ディー・アート, 2003.11.05
 
-Finish reading at:
+Finish reading at: 2022.05.25
 
 ###### Purpose
 Learn about SSH and able to setup SSH servers
