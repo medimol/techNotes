@@ -373,3 +373,93 @@ sshdの起動
 自動起動の設定
 - `$ chkconfig --lebel 2345 sshd on`
     - 設定を解除したい場合は"on"を"off"に
+
+### 第6章 実際にリモートアクセスを行ってみる
+#### 6-1 初めてSSHを使う人は必ず試してほしい「自分アクセス」
+- 動作に異常が起こった場合の問題切り分けができる
+- いつも他に接続できるorされる環境があるとは限らない
+
+自分のコンピュータのIPアドレスを知る
+- Windows(2000/XP): `ipconfig`
+- Linux: `ipconfig -a`, "inet addr"
+
+#### 6-2 基本的な使い方(1)-sshによるログインと命令実行
+sshdの実行
+- `$ /etc/rc.d/init.d/sshd start
+
+ログイン
+- `$ ssh ユーザー名@サーバ名(or IPアドレス)
+
+ログインの流れ
+1. サーバはアクセスを試みるユーザのauthorized_keysの存在を確認
+2. 公開鍵暗号方式によるユーザー認証(パスフレーズ入力)
+
+#### 6-3 基本的な使いかた(3)-ファイル転送 scpとsftp
+##### scp
+`$ scp [option] sourcePath targetPath`
+- path: `userName@PCName:DirectoryName(PATH)`
+
+options
+- "-r": 再帰的なコピー，指定したディレクトリ以下にあるファイルとディレクトリを全てコピーする
+- "-p": ファイルの更新日時をそのままにしてコピー作業を行う
+
+##### sftp
+`$ sftp userName@serverName:directory`
+
+対話モードになる
+- pwd
+- ls
+- cd
+- put: アップロード
+    - `put clientFileName serverFileName`
+    - serverFileNameは省略できる(clientFileNameになる)
+- get: ダウンロード
+    - `get serverFileName clientFileName`
+    - clientFileNameは省略できる
+- mput/mget: 複数
+    - e.g. `sftp> mput *.html`
+- quit
+
+### 第7章 もっと便利にリモートアクセス
+#### 7-1 WindowsOSでのGUIクライアント環境
+PuTTy
+
+ssh-agent， ssh-addにより，毎度パスコードを入力しなくてよくなる
+- ssh-agent: 秘密鍵を記憶しておくプログラム
+- ssh-add: ssh-agentの秘密鍵の登録，追加，削除をするプログラム
+```sh
+$ eval 'ssh-agent'
+$ ssh-add keyName(省略可)
+Enter passphrase for userName:(passphrase)
+```
+
+動作を止めるとき
+- `$ eval 'ssh-agent -k'
+
+#### 7-2 ダイナミックDNSを使って，一般家庭でSSHサーバを構築する
+固定IPアドレスを持たないユーザーでもサーバを持てるようにしてくれる
+
+No-IP.com
+
+ダイナミックIPアドレスの変更の自動反映
+- Windows: DiCE(by sarad)
+- Linux: 自分でスクリプトを組む
+
+DDNSによるSSHアクセス
+- `$ ssh hogessh.no-ip.com -l ユーザー名`
+
+インターネット越しのアクセスができないとき
+- sshdサーバの稼働
+- ホスト名 or IPアドレスが正しくない
+- sshd_configなどで使用するポート番号を正しく設定していない
+- ルータでSSHが許可されていない
+    - 22番ポートの許可とポートフォワーディング
+- プロバイダでSSHが許可されていない
+
+#### 7-3 SSHのポートフォワーディングを使って安全な通信を確率する
+- 開くポートを減らせる
+- 通信の暗号化
+
+`$ ssh -L`でクライアントからポートフォワーディング
+
+サーバーは"AllowTcpFowarding yes"
