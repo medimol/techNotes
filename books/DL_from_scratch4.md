@@ -1453,11 +1453,140 @@ Dueling DQN
 確率的な方策 $\pi(a|s)$
 - 状態$s$において行動$a$を取る確率
 - 方策をニューラルネットワークでモデル化する
-    - すべての重みパラメータを $\Theta$ という記号で集約して表す
-- ニューラルネットワークによる方策 $\pi_\Theta(a|s)$
+    - すべての重みパラメータを $\theta$ という記号で集約して表す
+- ニューラルネットワークによる方策 $\pi_\theta(a|s)$
 
-方策 $\pi_\Theta$ を使って目的関数を設定
+方策 $\pi_\theta$ を使って目的関数を設定
+- 問題設定
+    - エピソードタスク
+    - 方策 $\pi_\theta$ によって行動を選ぶ
+- 状態，行動，報酬からなる時系列データが得られたと仮定
+    - $\tau = (S_0, A_0, R_0, S_1, A_1, R_1, \ldots, S_{T+1})$
+    - $\tau$ は軌道(trajectory)と呼ばれる
+- 収益(リターン)は割引率 $\gamma$ を用いて
+    - $G(\tau) = R_0 + \gamma R_1 + \gamma^2 R_2 + \ldots + \gamma^T R_T$
+    - 収益が $\tau$ から計算できる($G(\tau)$ と表記)
+- 目的関数 $J(\theta)$ は
+    - $J(\theta) = \mathbb{E}_{\tau \sim \pi_\Theta}[G(\tau)]$
+    - 収益 $G(\tau)$ は確率的に変動するのでその期待値が目的関数になる
+    - $\tau \sim \pi_\theta$ は $\tau$ が $\pi_\theta$ によって生成されることを示す
+        - $\tau$ の生成過程には $p(s'|s,a)$ と $r(s,a,s')$ も関係するが，制御できないので省略
+
+目的関数の勾配を求める
+- パラメータ $\theta$ に関する勾配 $\nabla_\theta$ で表す
+$$
+\nabla_\theta J(\theta) = \delta_\theta \mathbb{E}_{\tau \sim \pi_\theta}[G(\tau)]
+    = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum^T_{t=0} G(\tau)\nabla_\theta\log\pi_\theta(A_t|G_t)\right]
+$$
+- 導出過程は[D.1方策勾配法の導出](#d1-方策勾配法の導出)
+- $\nabla_\theta$ が $\mathbb{E}$ の中にある
+    - 勾配の計算は $\nabla_\theta\log\pi_\theta(A_t|S_t)$ として行われる
+
+続いてニューラルネットワークのパラメータを更新する
+- 最適化手法は複数ある
+- 単純な方法
+    - $\theta \leftarrow \theta + \alpha\nabla_\theta J(\theta)$
+    - $\alpha$ は学習率
+    - 勾配上昇法
+
+$\nabla_\theta J(\theta)$ は期待値として表され(上式)，モンテカルロ法によって求めることができる
+- 方策 $\pi_\theta$ のエージェントに実際に行動させて軌道 $\tau$ を $n$ 個得られたとする
+- 各 $\tau$ について期待値の中身を計算し，その平均を求めることで $\nabla_\theta J(\theta)$ を近似
+$$
+sampling: \tau^{(i)} \sim \pi_\theta (i = 1,2,\ldots,n) \\
+x^{(i)} = \sum^T_{t=0} G(\tau^{(i)})\nabla_\theta\log\pi_\theta\left(A^{(i)}_t|S^{(i)}_t\right) \\
+\nabla_\theta J(\theta) \simeq \frac{x^{(1)}+x^{(2)}+\ldots+x^{(n)}}{n}
+$$
+- $\tau^{(i)}$: $i$ 番目のエピソードで得られた軌道
+- $A^{(i)}_t$: $i$ 番目のエピソードの時刻 $t$ における行動
+- $S^{(i)}_t$: $i$ 番目のエピソードの時刻 $t$ における状態
+
+以降， $n=1$ の場合について考える
+
+$$
+\nabla_\theta\log\pi_\theta(A_t|S_t) = \frac{\nabla_\theta\pi_\theta(A_t|S_t)}{\pi_\theta(A_t|S_t)}
+$$
+- $\nabla_\theta\log\pi_\theta(A_t|S_t)$ は $\nabla_\theta\pi_\theta(A_t|S_t)$ という勾配ベクトルを $\frac{1}{\pi_\theta(A_t|S_t)}$ 倍したもの
+- $\nabla_\theta\log\pi_\theta(A_t|S_t)$ と $\nabla_\theta\pi_\theta(A_t|S_t)$ は同じ方向を指す
+- $\nabla_\theta\pi_\theta(A_t|S_t)$ は状態 $S_t$ で行動 $A_t$ をとる確率が最も増える方向を指す
+- $\nabla_\theta\log\pi_\theta(A_t|S_t)$ も状態 $S_t$ で行動 $A_t$ をとる確率が最も増える方向指す
+- その方向に対して $G(\tau)$ という重みがかけられる
+
+方策勾配法の実装
+- ニューラルネットワーク: 2層の全結合からなるモデル
+    - 出力: ソフトマックス関数(各行動に対する確率が得られる)
+- `self.pi(state)`によってNNの順伝播を行い確率分布`probs`を得る
+- その確率分布に従って行動を1つサンプリング(選んだ行動の確率は`probs[action]`で返す)
+
+変数を数式と照らし合わせる
+$$
+G(\tau)\nabla_\theta\log\pi_\theta(A_0|S_0)
+$$
+- `prob` (Dezero.Variable) : $\pi_\theta(A_0|S_0)$
+- `G` (float) : $G(\tau)$
+- `J` (Dezero.Variable) : $G(\tau)\log\pi_\theta(A_0|S_0)$
+- `J`が求まれば，`J.backward()`によって $G(\tau)\log\pi_\theta(A_0|S_0)$ が求まる
+
+- 損失関数は`-F.log(prob)`
+    - 目的関数のマイナスを損失関数とする$-J(\theta)$
+    - 勾配降下法の最適化手法(SGD, Adam, etc)によってパラメータ更新ができる
+
+#### REINFORCE
+方策勾配法を改善した手法
+- REward Increment = Nonnegative Factor x Offset Reinforcement x Characteristic Eligibility
+
+復習
+- 最も単純な勾配方策法
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}\left[\sum^T_{t=0}G(\tau)\nabla_\theta\log\pi_\theta(A_t|S_t)\right]
+$$
+- $G(\tau)$ 割引率付きの報酬の総和
+- どの時刻においても常に一定の重みを使って行動をとる確率を大きく(小さく)している問題点
+    - エージェントの行動の良し悪しはその行動の後に得られた報酬の総和によって評価される
+    - i.e. ある行動を起こす前に得られた報酬はその行動の良し悪しとは関係ない
+
+本来関係のない過去の報酬($G(\tau)$ に含まれる)を除去する
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}\left[\sum^T_{t=0}G_t\nabla_\theta\log\pi_\theta(A_t|S_t)\right] \\
+G_t = R_t + \gamma R_{t+1} + \ldots + \gamma^{T-t}R_T
+$$
+- $G_t$ は時刻$t$から$T$までの間に得られる報酬の総和
+- このアイディアに基づくアルゴリズムはREINFORCEとして知られている
+- 証明には文献を参照
+
+REINFORCEの実装
+- `self.memory`の要素を後ろから順にたどって`G`を求める
+
+#### ベースライン
+ベースライン(baseline)
+- 分散を減らす方法
+- 過去のデータから予測値を求め，その差分を考える
+
+ベースライン付きの方策勾配法
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}\left[\sum^T_{t=0}G_t\nabla_\theta\log\pi_\theta(A_t|S_t)\right] \\
+    = \mathbb{E}_{\tau\sim\pi_\theta}\left[\sum^T_{t=0}(G_t-b(S_t))\nabla_\theta\log\pi_\theta(A_t|S_t)\right]
+$$
+- $b(S_t)$ は任意の関数(ベースライン)
+- 式変形の証明は[D.2 ベースラインの導出](#d2-ベースラインの導出)
+- 関数の例
+    - これまでに得られた報酬の平均
+    - 価値関数 $V_{\pi_\theta}(S_t)$
+
+#### Actor-Critic
+- 価値ベースの手法と方策ベースの手法
+    - DQNやSARSAは価値ベースの手法
+- 価値ベースかつ方策ベースの手法を考える
+    - ベースライン付きのREINFORCEで，ベースラインに価値関数を用いるなら，価値ベースかつ方策ベースと考えられる
+
+Actor-Criticを考える(価値ベースかつ方策ベース)
+
+ベースライン付きの
 
 ### 付録A
 
 ### 付録C
+
+### 付録D
+#### D.1 方策勾配法の導出
+#### D.2 ベースラインの導出
