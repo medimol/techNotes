@@ -1,7 +1,7 @@
 # ゼロから作るDeep Learning 4 -強化学習編
 齊藤 康毅. 株式会社オライリー・ジャパン, 2022.04.04
 
-Finish reading at:
+Finish reading at: 2022.06.29
 
 ###### Purpose
 Learn about Reinforcement Learning for my research
