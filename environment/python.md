@@ -11,6 +11,33 @@ Anaconda を使う場合
 - パッケージ管理: 基本conda, なければ pip3
 - 仮想環境管理: conda
 
+## pyenv と poetry の使い方まとめ
+pyenv
+- インストール可能なバージョン一覧: `pyenv install --list`
+- インストール: `pyenv install {version}`
+- 一覧: `pyenv versions`
+- バージョン切り替え(global): `pyenv global {version}`
+- バージョン切り替え(local): `pyenv local {version}`
+  - poetry使っているなら，そちらでプロジェクトごとのバージョンを指定する
+  - ディレクトリ単位(`.python-version`が作成される)
+- pythonの場所確認: `pyenv which {python}`
+
+poetry
+- 自身のアップデート: `poetry self update`
+- プロジェクト作成: `poetry new {project-name}`
+  - 既存の物がある場合: `poetry init`
+- パッケージのインストール: `poetry add {package-name}`
+- パッケージのアンインストール: `poetry remove {package-name}`
+- パッケージのアップデート: `poetry update`
+  - 確認したい場合は `--dry-run`
+- パッケージ一覧: `poetry show`
+- 環境内でPythonバージョンを指定: `poetry env use {version}`
+- セットアップ: `poetry install`
+  - 開発で使うパッケージがいらないなら `--no-dev`
+- 仮想環境での実行: `poetry run python {file}`
+  - `poetry shell` や `python {file}` を用いると，仮想環境のシェルが立ち上がる
+    - 前者は実行時のみ仮想環境に，後者はずっと
+
 ## ツールまとめ
 ディストリビューション
 - Anaconda: データサイエンス向け
