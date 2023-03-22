@@ -33,3 +33,46 @@ Stable Baselines は内部的にTensorFlowを使っている
   - Stable Baselines は改良版
 - Gym Retro
   - レトロゲームを OpenAI Gym の環境として利用するためのライブラリ
+
+### 2章 Pythonの開発環境の準備
+私は Anaconda ではなく pyenv と poetry を使う
+
+GPU版のTensorFlow
+- 必要なもの
+  - NVIDIA の GPU をもつパソコン
+    - AMD でも動かす方法はあるらしい
+  - NVIDIAドライバと CUDA と cuDNN のインストール
+    - CUDA: NVIDIAが提供しているGPU向けの統合開発環境
+    - cuDNN: NVIDIAが提供している深層学習用のライブラリ
+  - tensorflow-gpu のインストール
+
+TPU: tensor processing unit
+
+Google Colab にはホスト型ランタイムがある
+- 自身のリソースも提供できる
+
+#### Python
+数値型
+- int, float, bool, complex
+- complex: 複素数
+
+比較演算子
+- a と b が異なる表現
+  - `a != b`
+  - `a <> b`
+  - `a is not b`
+
+三項演算子
+`aviator = "maverick" if age > 40 else "rooster"
+
+文字の埋め込み
+- `'複数の変数 = {}, {}, {:.2f}'.format(a, b, c)'`
+  - 浮動小数点の桁数指定: `:.2f`は小数点以下2桁
+
+lambda式
+- 関数を式として扱い，変数に代入できるようにする
+- 書式: `lambda 引数:戻り値のある関数`
+```py
+lambda_radian = (lambda x:x / 180 * 3.14)
+lambda_radian(90)
+```
