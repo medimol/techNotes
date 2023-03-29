@@ -145,3 +145,156 @@ Env クラスの主なプロパティ
   - 0 or 1，int型
 - MultiDiscrete クラス
   - Discrete の配列
+
+### 4章 Stable Baselines
+OpenAI Baselines と Stable Baselines の違い
+- OpenAI Baselines のフォークであり，リファクタリングして使い勝手を良くしたものが Stable Baselines
+  - RLアルゴリズムの共通インタフェース
+  - ドキュメントの提供
+  - IPython/Notebook のサポート
+
+MPI (message passing interface): 並列コンピューティングを利用するための標準化された規格および実装
+- Stable Baselines にはDDPG, GAIL, PPO1, PPO2 で使用されている
+
+現在，Stable Baselines はメンテナンス中であり，Stable Baselines3 の仕様が推奨されている
+
+`hello_baselines.py` についての解説
+- PPO2: マルチプロセッシングで訓練可能な強化学習アルゴリズム
+  - 環境を，「ベクトル化環境」でラップしなければならない
+- ベクトル化環境
+  - DummyVecEnv: 全環境を同じプロセスで実行
+  - SubprocVecEnv: 各環境を個別のプロセスで実行
+  - 引数で環境を返す関数を指定
+- モデル: 任意の強化学習アルゴリズムによって，入力に対する正しい出力を学習するオブジェクト
+  - 引数: 方策，環境，ログの詳細表示(verbose)
+    - 方策
+      - 'MlpPolicy': MLPを使用する方策，入力が特徴量の場合に適切
+      - 'MlpLstmPolicy': MLPとLSTMを使用する方策
+      - 'MlpLnLstmPolicy': MLPと layer normalized LSTM を使用する方策
+      - 'CnnPolicy': CNNを使用する方策，入力が画像データの場合に適切
+      - 'CnnLstmPolicy': CNNとLSTMを使用する方策
+      - 'CnnLnLstmPolicy': CNNと layer noramlized LSTM を使用する方策
+    - verbose
+      - `0`: なし
+      - `1`: 訓練情報
+      - `2`: TensorFlowデバッグ
+  - 今回
+    - 方策: 'MlpPolicy'
+    - 環境: env
+    - ログの詳細表示: `1`
+  - 生成されるモデルのメソッド
+    - `learn()`: 訓練
+      - `total_timesteps`で訓練するステップ数を指定
+    - `predict()`: 推論
+      - 引数: 現在の状態
+      - 戻り値: 行動，LSTM状態
+      - PPOやA2Cなどでは，確率的に行動するが，`deterministic=True`で決定的にすることができる(パフォーマンス向上を大いに期待できる)
+    - `save()`: モデルの保存
+    - `load()`: モデルの読み込み
+- SB3への修正
+  - PPO2は廃止されているため，PPOに
+  - action space への Dict型の利用は非対応というエラーが出る
+    - `make_vec_env`の使用で解決．これを使ったほうが楽
+
+強化学習における推論と予測の違い
+- 推論(inference): 現在の一部の情報をもとに，現在の全体の値を算出
+- 予測(prediction): 現在の情報をもとに，未来のある値を算出
+
+PPOの学習時のログ
+- `approxkl`: 新しい方策から古い方策へのKullback-Leibler発散尺度
+- `clipfrac`: クリップ範囲ハイパーパラメータが使用される回数の割合
+- `explained_variance`: 誤差の分散
+- `fps`: FPS
+- `n_updates`: 更新回数
+- `policy_entropy`: 方策のエントロピー
+- `serial_timesteps`: 1つの環境でのタイムステップ数
+- `time_elapsed`: 経過時間
+- `total_timesteps`: 全環境でのタイムステップの数
+- `value_loss`: 価値関数更新時の平均損失
+
+SB3以外の強化学習ライブラリ
+- Coach
+  - TensorFlow 対応．実装済みアルゴリズムが豊富
+- RLLib
+  - TensorFlow, PyTorch 対応．分散アルゴリズムが充実
+- Dopamine
+  - TensorFlow 対応．
+- SB3はソースコードが読みやすい
+
+強化学習の分類
+- モデルベース (e.g. AlphaZero)
+- モデルフリー
+  - オンポリシー (e.g. VPG, TRPO, PPO)
+  - オフポリシー (e.g. DDPG, TD3, SAC)
+
+モデルベース/モデルフリー
+- 環境モデル(状態遷移と報酬を予測する関数)を使用(or学習)できるかどうか
+  - 使用する -> モデルベース
+  - 使用しない -> モデルフリー
+- モデルベース
+  - 利点: エージェントが先を考え，可能な選択肢の範囲で何が起こるかを見て，行動を決定できる
+    - MCTS (Monte Carlo tree search)を使用した AlphaZero
+      - サンプル効率が大幅に向上(学習に必要なステップ数が少ない)
+  - 欠点: 適応できる問題が少ない(通常は環境の真のモデルは使えない)
+    - 経験からの環境モデルの学習は偏りが発生する可能性がある
+      - その結果，学習した環境モデルには適応できるが，実環境に適応できない可能性がある
+      - 環境モデルの学習は単純な時間増加では難しい
+- モデルフリー
+  - 利点: 実装および調整が容易
+    - モデルの使用によるサンプル効率の潜在的な向上は見られない
+  - オンポリシー (on-policy)
+    - 現在のポリシーで得られた経験のみを利用して，新しいポリシーを予測する
+    - 過去の経験を利用しない -> サンプル効率は低い
+    - 過去のポリシーによる経験は利用しないため，学習が安定(時間で改善)する
+    - e.g. VPG (vanilla policy gradient), 1992
+      - 高い報酬が得られる行動を優先し，低い報酬しか得られない行動を避けるように方策を最適化する手法
+    - e.g. TRPO (trust region policy optimization), 2015
+      - VPGの学習が安定するように改善
+      - 方策の更新をパラメータ空間の範囲内にすることで，大幅な更新を抑制
+    - e.g. PPO (proximal policy optimization), 2017
+      - TRPOの計算量を削減するように改善
+      - 使いやすさとパフォーマンスのバランスがGood
+  - オフポリシー (off-policy)
+    - 過去の経験を利用して現在のポリシーを予測する
+    - 過去の経験を利用 -> サンプル効率は高い
+    - 経験的には性能が得られるが，保証がなく潜在的に脆弱で不安定
+    - e.g. DDPG (deep deterministic policy gradient), 2015
+      - Q関数と方策を同時に学習する手法
+      - i.e. 連続行動空間に対応したDQN
+    - e.g. TD3 (twin delayed DDPG), 2018
+      - DDPGの学習が安定するように改良
+    - e.g. SAC (soft actor-critic), 2019
+      - Q関数を用いた手法で
+      - エントロピーの概念を導入
+        - 探索と活用のトレードオフの概念を表現
+        - 増加で探索，減少で活用
+        - 局所最適解に陥るのを防ぐ
+
+その他RLアルゴリズムの紹介
+- DQN: Q学習と深層学習の組み合わせ
+- A3C (asynchronous advantage actor-critic): 方策(actor)と価値関数(critic)の両方を利用
+  - 一般的に，Actor-Criticと呼ばれる
+- A2C (advantage actor-critic): A3Cを分散同期に
+- ACER (actor-critic with experience replay): A3Cをオフポリシーにして，経験再生を利用できるように
+- ACKTR (actor critic using Kronecker-Factored Trust Region): TRPOとActor-Criticの組み合わせ
+- HER (hindsight experience replay): 失敗からも学ぶ手法，何かしらの目標を達成させることで，結果を置換させて学習
+
+模倣学習
+- 教師による一連の行動(デモ)を模倣する手法
+- デモと同じ行動を採ることで報酬がもらえるRL(教師あり学習)
+- 強化学習の支援に利用(大まかな方針を教える)
+- e.g. BC (behavioral cloning), 1999
+  - 状態ごとのデモの行動を教師あり学習で学習
+  - 高速，デモを忠実に学習，多数のデモが必要
+  - SBでは事前学習が可能であり，BCが利用できる(メソッドとして実装されている)
+- e.g. GAIL (generative adversarial imitation learning), 2016
+  - GAN (generative adversarial network) によって模倣学習を行う
+    - Generator による教師データに近いデータを生成
+    - Discriminator による教師データとGeneratorによるデータの識別
+  - 少ないデモで効果，事前学習が不可(SBの制限)，画像による訓練は未対応(SBの制限)
+
+===
+正誤表
+- p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
+- p.106: A3Cが「Advantage Actor-Critic」になっている
+- p.107: GAILが「Imitaiton」の誤字
