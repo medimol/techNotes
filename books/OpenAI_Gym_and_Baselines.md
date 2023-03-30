@@ -293,8 +293,62 @@ SB3以外の強化学習ライブラリ
     - Discriminator による教師データとGeneratorによるデータの識別
   - 少ないデモで効果，事前学習が不可(SBの制限)，画像による訓練は未対応(SBの制限)
 
+平均報酬と平均エピソード長のログ出力(`monitor.py`)
+- Monitor
+  - 報酬，エピソード長，時間を`monitor.csv`に出力する環境ラッパー
+- ターミナルの出力に以下が追加
+  - `ep_len_mean`: 平均報酬
+    - 増加が求められている
+  - `ep_reward_mean`: 平均エピソード長
+    - 今回のタスクでは，増加が求められている
+- Pandas によるCSVの読み込みと，Matplotlib によるグラフ作成
+
+モデルの保存と読み込み
+- 保存: `model.learn` 後に `model.save('name')`
+  - zip形式で保存される
+  - 中身:
+    - `data`: JSON, ハイパーパラメータの辞書
+    - `parameter_list`: JSON, paramsに含まれる重みパラメータのリスト
+    - `parameters`: ZIP, 重みパラメータのバイナリファイル群
+      - npyはNumPy配列のバイナリファイル
+  - Tensorflow.js や Java にエクスポート可能
+- 読み込み: env作って，モデルを呼び出すときに，`.load('name')`する
+
+学習状況の監視の種類
+- verbose: 標準出力として訓練情報 or TensorFlowデバッグを出力
+- Monitor: `monitor.csv`に平均報酬とエピソード長を出力
+- TensorBoard: TensorBoardで平均報酬などを監視
+- コールバック: PPO2/ACERはnステップ毎，DQNなどは1ステップ毎にコールバック関数を呼び出す
+
+TensorBoardによる監視
+- modelを呼び出す際に，`tensorboard_log=log_dir`で出力先を指定
+- `$ tensorboard --logdir=./logs/` を実行し，https://localhost:6006 で学習中，学習後に平均報酬を観察できる
+
+コールバックによる監視
+- コールバック関数を定義
+  - `model.learn`の引数でcallbackに渡す
+- コールバックのタイミング: PPO/ACERはnステップ毎，DQNは1ステップ毎
+  - PPOの引数とかに`n_steps`がある
+- `callback_watch.py`: 100ステップごとに100エピソードの平均報酬を計算し，最大の平均報酬を超えたらモデルを保存するコード
+  - `def callback(_locals, _globals):`
+  - `_locals`と`_globals`は辞書型で，それぞれ多くのキーを持つ
+  - 戻り値はbool(学習を継続するかどうか)
+  - `load_results()`により`monitor.csv`を読み込み
+  - `ts2xy()`: DataFrameをx軸とy軸の配列に分割．今回はx軸がステップ数，y軸が報酬
+  - `_locals['self']`によるモデルへのアクセス
+
+マルチプロセッシング
+- ベクトル化環境: 複数環境で同時に学習できる環境
+  - 次の状態，報酬，エピソード完了，情報などをまとめた配列(ベクトル)
+- ベクトル化環境の種類:
+  - `DummyVecEnv`: 全環境を同じプロセスで実行
+  - `SubprocVecEnv`: 各環境を別プロセスで実行
+- CPUコアが2-8程度であれば，DummyVecEnvの方が高速
+  - プロセス間通信の通信遅延がボトルネックに
+
 ===
 正誤表
 - p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
 - p.106: A3Cが「Advantage Actor-Critic」になっている
 - p.107: GAILが「Imitaiton」の誤字
+- p.118: 「model.learn()の引数「tensorboard_log」に，」
