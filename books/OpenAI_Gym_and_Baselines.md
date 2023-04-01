@@ -346,6 +346,13 @@ TensorBoardによる監視
 - CPUコアが2-8程度であれば，DummyVecEnvの方が高速
   - プロセス間通信の通信遅延がボトルネックに
 
+`multi_processing.py`
+- `make_env()`: `make_vec_env()`で代替可能
+- テスト環境: 1環境，単一プロセスの環境を生成して，使う
+- `env.seed()`: 環境ごとの乱数シード
+- `set_global_seeds()`: Python, TensorFlow, NumPy, Gym の乱数シードを指定
+  - SB3にはなさそう，あまり重要性は高くない?
+
 ===
 正誤表
 - p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
