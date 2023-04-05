@@ -353,6 +353,55 @@ TensorBoardによる監視
 - `set_global_seeds()`: Python, TensorFlow, NumPy, Gym の乱数シードを指定
   - SB3にはなさそう，あまり重要性は高くない?
 
+`eval_5000step.py` & `eval_10sec.py`
+- 評価関数 `evaluate()`
+  - 引数: モデル，環境，評価エピソード数
+  - 戻り値: 平均報酬
+- 統計の収集
+  - (10秒間のステップ数は，平均から出してるだけ)
+- グラフのプロット
+
+DummyVecEnv vs SubprocVecEnv
+- SubprocよりDummyの方が速度は早い
+  - プロセス間同期と通信によるもの
+- 8コアがライン
+- 並列化に関しての情報
+  - [OpenAI RAPID](https://opanai.com/blog/how-to-train-your-openai-five)
+  - [IMPALA](https://arxiv.org/abs/1802.01561)
+
+Gymのカスタム環境
+- `gym.Env`を継承
+- 行動空間と状態空間の型定義
+- 環境のリセット関数
+- step関数
+- render関数
+
+Stable Baselines Zoo
+- 学習済みモデルの利用
+- 基本的なスクリプト
+- ハイパーパラメータ―
+  - 強化学習アルゴリズム別 -> 環境別 にyml形式で保存されている
+- 学習の実行(ハイパーパラメータの利用)
+  - パッケージでインストールした場合: `poetry run python3 -m rl_zoo3.train --algo ppo --env CartPole-v1`
+  - GitHubからインストールした場合: rl_zoo3ディレクトリで `python3 train.py --algo ppo --env CartPole-v1`
+  - 中止した学習を再開したい場合は `-i` オプションで，途中までのモデルが保存されているzipファイルを指定
+- ハイパラはOptunaにより決定されている
+  - `-optimize --n-trials {trial number} --n-jobs {job number} --sampler {sampler} --pruner {pruner}`でハイパラの最適化を行う
+- 学習済みモデルの利用
+  - rl-trained-agents に強化学習アルゴリズム別に保存されている
+  - 実行: `poetry run python3 -m rl_zoo3.enjoy --algo ppo --env CartPole-v1 --folder rl-trained-agents/ -n 5000`
+- 録画機能
+  - e.g. BipedalWalkerHardcore-v2 を PPO で 1000ステップ分の録画
+    - `python3 -m utils.record_video --algo ppo2 --env BipedalWalkerHardcore-v2 -n 1000`
+    - 直下に `logsvideos`から始まる動画ファイルが出力される
+
+ハイパラ最適化のtips
+- ステップ数: 学習の効果が現れ始めると思われるステップ数を指定
+- 探索するハイパラの定義: 減らすなどカスタマイズをする
+- 枝刈りと学習率: 学習率が小さいほど初期段階で刈られる傾向にある
+  - 学習率は固定で，それ以外のハイパラを枝刈りありで最適化し，その後学習率のみ枝刈りなしで最適化するのがよい
+
+
 ===
 正誤表
 - p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
