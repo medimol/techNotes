@@ -401,6 +401,104 @@ Stable Baselines Zoo
 - 枝刈りと学習率: 学習率が小さいほど初期段階で刈られる傾向にある
   - 学習率は固定で，それ以外のハイパラを枝刈りありで最適化し，その後学習率のみ枝刈りなしで最適化するのがよい
 
+### Atari 環境の攻略
+前処理
+- 行動: 型の低次元化，サンプル効率を考慮した型の指定，決まりきった行動の実施
+- 状態: 型の低次元化，サンプル効率を考慮した型の指定
+- 報酬: 目標設定とサンプル効率を考慮した報酬のタイミングの量の設定
+- エピソード完了: 目標設定を考慮したエピソード完了の条件の指定，エピソードを短くすることによる学習回数の向上
+
+環境ラッパーによって前処理を追加する
+- Monitor ラッパー: 既出
+- Atari ラッパー，Retro ラッパー
+- Common ラッパー: Gym環境用の前処理
+- VecEnv ラッパー: ベクトル化環境専用の前処理
+
+Atari ラッパー
+- OpenAI Baselines の atari_wrapper.py に含まれている
+- DQNの論文で紹介されている手法が提供されている
+- ラッパー概要
+  - NoopRestEnv: 環境リセット後の30ステップまではNo Operation(NOOP)．初期状態にばらつきが生まれる
+  - FireRestEnv: 環境リセット後の最初の行動を"FIRE"に
+  - MaxAndSkipEnv: 4フレームごとに行動を選択(行動は4フレーム続く)．学習速度の促進
+  - ClipRewardEnv: 報酬を-1,0,1にクリッピング．環境ごとの報酬サイズを同じにして，同じモデルで複数の環境が攻略できるようになる
+  - WrapFrame: 画像イメージをグレースケールに．データ量が少なくなり学習速度が向上
+  - FrameStack: 直近4フレーム分の画像イメージを環境状態として扱う．連続した動きの特徴抽出が可能．
+  - ScaledFloatFrame: 状態を255で割ることで正規化．学習効率の上昇が期待
+  - EpisodicLifeEnv: ライフが0になるとエピソード完了
+  - Atari環境を生成するメソッド
+  - DeepMindスタイルのラッパーを追加するメソッド
+
+Retro ラッパー
+- retro_wrapper.py に含まれている
+- OpenAI Retro Contest による手法が提供されている
+- ラッパー概要
+  - StochasticFrameSkip: FrameSkipの拡張．フレーム数を選択でき，加えて確率的に行動が1フレーム余分にされる(スティッキーアクション)．確率論的に環境になる(行動シーケンスの学習から問題解決の学習に)
+  - StartDoingRandomActions: 環境リセットから30ステップまでランダム行動
+  - Downsample: 画像イメージのサイズを任意の割合でダウンサイズ
+  - Rgb2gray: RGB画像をグレースケールに
+  - AppendTimeout: タイムアウトの追加
+  - MovieRecord: 任意の数のエピソード毎に動画を保存(.bk2)
+  - SonicDiscretizer: ソニックの行動空間をMultiBinary(12)からDiscrete(7)に変換
+  - RewardScaler: 報酬を0.01倍に正規化
+  - AllowBacktracking: 報酬を「現在のX座標 - 1フレーム前のX座標」から「現在のX座標 - 進捗したX座標の最大値(負なし)」に変換する
+  - Retro環境を生成するメソッド
+  - DeepMindスタイルのラッパーを追加するメソッド
+
+Common ラッパー
+- wrappers.py に含まれている
+- ラッパー概要
+  - ClipActionsWrapper: 行動空間のlowとhighで行動をクリッピング
+  - TimeLimit: 1エピソードの最大ステップ数を指定
+
+VecEnv ラッパー
+- VecNormalize: 状態と報酬を正規化するために移動平均と標準偏差を計算
+- VecFrameStack: 連続した複数の状態をスタック．状態を時間を統合
+
+ハイパーパラメータの調整(PPO)
+- Policy Gradient: エージェントは環境と対話して報酬を取得し，その報酬を使用して方策を改善する
+  - オフポリシーな強化学習アルゴリズムに比べてサンプル効率が悪い
+  - ステップ
+    1. 「経験」(状態，報酬，行動のセット)を収集
+    2. 「方策」を改善
+  - 問題点
+    1. 方策を更新する前にエージェントが収集するべき経験値
+      - ハイパラ
+        - Epoch: 収集した経験を勾配降下にかける回数
+        - MiniBatch: 勾配降下に使うミニバッチのサイズ
+        - Horizon: 方策更新前に収集する経験の数
+    2. 古い方策を新しい方策に更新する方法
+      - 方策の大幅な変更によってパフォーマンスが低下し回復しなくなる可能性がある
+      - 代理損失関数の仕様による，方策の更新範囲の制限
+        - Clipping parameter($\sigma$): 新旧の方策の比率に対する許容限界
+        - Dicount($\gamma$): 将来の報酬割引率
+        - GAE(generalized advantage estimation) parameter($\lambda$): GAEのバイアスと分散のトレードオフを調整するパラメータ
+  - 価値関数係数: 損失計算の価値関数係数
+  - エントロピー係数: 損失計算のエントロピー係数
+  - 学習率: 任意のステップ数orコールバック関数で指定
+
+Google Colab の90分問題への対策: 90分ごとに1時間時間をあける
+```
+import time
+import datetime
+import webbrowser
+
+for i in range(12):
+  browse = webbrowser.get('chrome')
+  browse.open('{url to the notebook}')
+  print(i, datetime.datetime.today())
+  time.sleep(60*60)
+```
+
+模倣学習によるAtari環境の学習
+- SBではBCとGAILが模倣学習が使える(GAILは画像による訓練未対応)
+  - SB3ではGAILに対応していない(model-free RL に集中するため)
+- Bowling 環境
+  - ランダム行動から始まるRLでは学習が困難
+  - 'bowling_demo.py' によってエキスパートデータの収集
+    - npz形式での保存
+  - 'bowling.py' 模倣学習による事前学習と強化学習
+  - この環境においては，模倣学習のみが最適らしい
 
 ===
 正誤表
