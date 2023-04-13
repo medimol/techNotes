@@ -500,6 +500,55 @@ for i in range(12):
   - 'bowling.py' 模倣学習による事前学習と強化学習
   - この環境においては，模倣学習のみが最適らしい
 
+### 6章 Gym Retro
+Gymnasium では，Gym Retro のフォークである Stable-Retro がある
+  - Gym Retro はメンテナンスモード
+
+Gym Retro の Airstriker-Genesis 環境の構築
+```
+import retro
+env = retro.make(game='Airstriker-Genesis', state='Level1')
+```
+
+Gym Retro で利用できるゲーム一覧の取得方法
+```
+import retro
+for game in retro.data.list_games():
+  print(game, retro.data.list_states(game))
+```
+- 環境IDと開始状態の出力
+
+市販ゲームのROMをインポート
+- `python -m retro.import ./roms/`
+- `./roms/` はROMの格納先フォルダ
+
+Airstriker の行動空間を MultiBinary(12) から Discrete(3) に変更する AirstrikerDiscretizer ラッパー
+- MultiBinary(12) はメガドライブの12個のボタンに対応しており，Airstriker では "B", "LEFT", "RIGHT" のみでプレイできる
+- `AirstrikerDiscretizer(gym.ActionWrapper)` クラスを作成
+- `buttons`に元の行動空間，`actions`に新しい行動空間を2次元配列で定義
+- `self._actions`に，新しい行動空間を元の行動空間で定義
+  - "B"のみが1の配列，"LEFT"のみが1の配列，"RIGHT"のみが1の配列
+- `def action(self, a): return self._actions[a].copy`
+
+報酬とエピソード完了の変更 CustomRewardAndDone ラッパー
+- 報酬: $スコア / 20$
+- エピソード完了: 撃墜された時
+- `CustomRewardAndDoneEnv(gym.Wrapper)` クラスを作成
+- `def step(self, action):`で，
+  - `state, rew, done, info = self.env.step(action)`
+  - 更新したい部分(今回は`rew /= 20`, `if info['gameover'] == 1: done = True`)する
+  - `return state, rew, done, info`
+
+Airstrikerの学習とテスト
+- 多くのラッパーにより，
+  - 行動空間 MultiBinary(12) -> Discrete(3)
+  - 状態空間 Box(224, 320, 3) -> Box(112, 160, 4)
+
+ゲームインテグレーション
+- ゲームROMに付加する「開始状態」「報酬」「エピソード完了」の情報
+- 必要なファイルがいくつかあり，それらを作成するためにそれぞれのツールが必要になる
+- 現時点では必要ないと思われるので省略する
+
 ===
 正誤表
 - p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
