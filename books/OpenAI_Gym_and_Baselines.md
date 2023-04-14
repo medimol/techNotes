@@ -603,6 +603,92 @@ NEAT: NeuroEvolution of Augmenting Topologies
 - World Models applied to Sonic: 世界モデルをソニックに適応
   - RL + 模倣学習 には及ばないが，今後が期待される
 
+### 8章 さまざまな強化学習環境
+MuJoCo環境とRobotics環境
+- ロボットアーム(FetchReach-v1)を使用
+- HER+SACモデルを使用
+  - 実際のロボット環境は高速な学習が困難であり，少ないステップ数で効率的に学習したい
+  - サンプル効率の高いオフポリシーのSACと，失敗からも学ぶHER
+  - HERを読み込み，HERを適用するオフポリシーRLアルゴリズムにSACを指定する
+
+PyBullet環境
+- オープンソース3D物理シミュレーション環境
+  - pip でインストールできる
+- 四足歩行を歩かせるAntBulletEnvを使用
+- `import pybullet_env`で，Gymに環境が自動的に登録される
+- `render()`を呼ぶタイミングが異なる
+  - `env.reset()`より前に1回だけ呼ぶ
+
+AnyTrading
+- トレーディングの強化学習環境
+  - どのようなデータセットを用いれば良いのかを研究するのが目的
+  - pip でインストールできる
+
+Unity ML-Agents
+- Unityの強化学習環境
+  - UnityでRL環境を構築し，RLを行うオープンソースフレームワーク
+- セットアップ
+  - Unityの開発環境
+  - Unity ML-Agents リポジトリ
+    - 強化学習の環境を作成するためのUnityアセット
+    - 強化学習を行うPythonスクリプト
+- Gymラッパー: Unity ML-Agents 環境を Gym 環境に変換
+  - Unity ML-Agents Gym Wrapper
+
+MarLö
+- マインクラフトの模倣学習環境
+  - Malmö は，MSが提供するマイクラをAI研究用のプラットフォームとするラッパー
+  - MarLö は，これをラップしてOpenAI Gym のインタフェースに対応させたもの
+  - pipでインストールできる
+- 11個の強化学習環境を提供
+  - 金を発見する，Mobを捕まえる，etc
+- マインクライアントとクライアント(マイクラ本体)を起動する
+  - 環境とエージェントが別々に実行される
+  - Pythonスクリプトでエージェントをクライアントに接続する
+- MineRL: マイクラのデモの大規模データセット
+  - タスクに対しての自動注釈付きの状態行動ペア
+  - 新しいタスクの導入とデータ収集のプラットフォームも提供
+
+PySC2
+- StarCraft II のRL環境
+  - DeepMindが提供している
+  - SC2環境から状態を取得したり行動を送信するPythonインタフェース
+    - 内部に StatCraft II API を用いている
+- SC2 本体をインストールする
+  - フォルダ構成などを合わせる
+- Mapを入手する
+- pip で PySC2 をインストールする
+- エージェントの学習に適した色分けがされている feature layer を用いる
+  - 実行状態が普通と異なる
+- サンプルエージェントが用意されている
+- 参考するべき記事が DeepMind より多く公開されている
+
+その他RL環境
+- Obstacle Tower: Unityで作成された，塔を上ることを目標にしている
+- GVGAI GYM: Video Game Description Language (ビデオゲーム記述言語)によるゲーム用RL環境
+  - 9個のクラッシックゲームのクローンが含まれている
+- gym-city: Micropolic (オープンソース版のシムシティ1)と Conway's Game of Life の1プレイヤーバージョンを提供
+  - 都市開発を行うRL環境
+- PGE: Parallel Game Engine
+  - 人工知能実験用のゲームエンジン
+  - ブロック積みゲーム，カートポール，四足歩行，テニスなど
+- gym-gazebo
+  - ROS(Robot Operating System)とGazeboを使用したロボット工学向けの環境
+- gym-maze: 単純な2D迷路環境
+- osim-rl
+  - 人体の筋骨格モデルと物理ベースのシミュレーション環境．人間の歩行or走行が目的
+- gym-minigrid: シンプルかつ軽量なグリッドワールド環境
+- gym-miniworld: RLとロボット研究の3Dインテリア環境
+- gym-sokoban: 倉庫番ゲーム
+  - Imagination-Augumented Agents for Deep Reinforcement Learning によるルール定義
+- gym-donkeycar: Donkey Car を自律走行させるプラットフォーム
+- gym-duckietown: ロボット工学とAIを学ぶプラットフォーム by MIT
+  - 都市(Dukietown)のシミュレーション
+- GymFC: 姿勢制御に重点を置いたフライトコントロールチューニングフレームワーク
+- Neuroflight(ニューラルネットワークでサポートされているフライトコントロールファームウェア)で使用されるコントローラーの開発ができる
+- GymGo: 囲碁
+- Gym Electric Motor (GEM): 多様な電気モーターとコンバータを考慮に入れたEVドライブをシミュレートするRL環境
+
 ===
 正誤表
 - p.104: オンポリシーにて「過去の経験を利用するため，サンプル効率は低い」となっている
