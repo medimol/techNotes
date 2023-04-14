@@ -1,7 +1,7 @@
 # OpenAI Gym/Baselines 深層学習・強化学習人工知能プログラミング実践入門
 布留川 英一. 株式会社ボーンデジタル, 2020.02.25.
 
-Finish reading at:
+Finish reading at: 2023.04.14J
 
 ##### Purpose
 強化学習の実戦経験を積まなければならない
