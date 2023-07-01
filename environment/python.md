@@ -3,6 +3,7 @@
 ## 結論から
 Anaconda を使わない場合(推奨)
 - バージョン管理: pyenv
+  - `python3`を使用して導入し，以降は`python`を使用する
 - パッケージ管理: poetry
 - 仮想環境管理: poetry
 
@@ -37,6 +38,7 @@ poetry
 - 仮想環境での実行: `poetry run python {file}`
   - `poetry shell` や `python {file}` を用いると，仮想環境のシェルが立ち上がる
     - 前者は実行時のみ仮想環境に，後者はずっと
+- `virtualenvs.prefer-active-python` を `true` でpyenvのPythonバージョンに合わせてくれる
 
 ## ツールまとめ
 ディストリビューション
@@ -120,3 +122,38 @@ Python環境
 
 ツール
 - 基本的に pyenv と pipenv
+
+## pyenv, venv, poetry の調査
+
+`python`コマンドと`python3`コマンドの使い分け
+- `python`コマンド: Python2系or3系が使われる
+- `python3`コマンド: Python3系が使われる
+- 現在は3系が主流なので，`python3`コマンドを使うのが無難
+- 古いライブラリの中には2系を使用しているものもあり，このような仕様になっている
+
+であれば，pyenvを使用したときに`python`コマンドのPythonバージョンが変化し，`python3`コマンドのPythonバージョンが変化しないのは問題なのでは?
+- ドキュメントには特に明記されてない
+- pyenvでは2系のバージョンも持ってこれるし，`python`コマンドのバージョンが変わるのはそう
+- Python2系を使用しているプログラムが困ったことになるけどそれはさっさと3系にしろよという話ではある
+- であれば`python3`コマンドの扱いをどのようにすればいいか悩むな．ほっとけばいいか
+
+venv
+- プロジェクトごとに環境を作る
+- activate: `source env_name/bin/activate`
+
+venvであれば，activateをすれば，プロジェクトに関係のないファイルもその環境を使って実行できる．
+poetryでも同じことができないか?
+- conda も activate すれば常にその環境が使用される
+- 本来仮想環境はそれを使用するプロジェクト内で使用されるべきであり，それ以外は普通にローカル環境で実行すればよい
+
+poetry
+- 既存の仮想環境を読み取ってくれる
+- 仮想環境がなければ作ってくれる
+- `virtualenvs.prefer-active-python`を`true`にすることで，pyenvのPythonバージョンを使用してくれる
+  - 普通は，poetryがインストールされたPythonバージョンを使用する
+- `poetry env use /full/path/to/python` で，明示的に使用するバージョンを指定できる
+  - この指定を解除したい場合: `poetry env use system`
+
+### まとめ
+- `python3`はpyenv導入後は使用せず，`python`コマンドを使用する
+- プロジェクトにはpoetryの仮想環境を使用し，それ以外はローカル環境を使用する
