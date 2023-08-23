@@ -21,6 +21,7 @@ pyenv
   - poetry使っているなら，そちらでプロジェクトごとのバージョンを指定する
   - ディレクトリ単位(`.python-version`が作成される)
 - pythonの場所確認: `pyenv which {python}`
+- pyenvを使うと，コマンドは`python`になる(`python3`ではない)
 
 poetry
 - 自身のアップデート: `poetry self update`
