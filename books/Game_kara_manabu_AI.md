@@ -114,9 +114,57 @@ GVGAI (General video game AI)
 - フォワードモデル
   - ある行動を選択した際の結果をシミュレート
 
-Malmo
-- MinecraftをプレイするAIを開発するための環境
-- 2016年3月にMicrosoftから発表
-- APIによって操作
-- Malmoを使ったAIコンペティション
+深層強化学習とゲーム環境
+- Malmo
+  - MinecraftをプレイするAIを開発するための環境
+  - 2016年3月にMicrosoftから発表
+  - APIによって操作
+  - Malmoを使ったAIコンペティション
+- OpenAI Gym
+  - 現在は Gymnasium にその役割を引き継いでる
+  - 2016年4月に発表されたPythonライブラリ
+  - 標準化された環境による盛んな知見の共有と結果の比較
+- DeepMind Lab
+  - 2016年12月に発表
+  - 3Dゲーム環境
+    - Quake III Arena engine (a.k.a. id Tech3) がベース
 
+StarCraft II
+- 2017年8月，DeepMind と Blizzard Entertainment が共同で発表
+  - StartCraft II をAI研究の環境としてオープンにする
+- 囲碁に代わる新しい研究目標を提供
+- スコアを最大化するのではなく，長期的な戦略で人間と競う
+- 特徴
+  - RTSであり，ターン性ではない
+  - 部分観測であり，かつ自発的に観測しに行かなければいけない
+- StarCraft (1998-)の時からAIでプレイする方法が研究されてきた
+  - 2010年からStarCraft AI Competitionが毎年開催
+  - Brood War API(BWAPI)によるエージェント(bot)を作成
+    - いわゆるスクリプトによる操作
+  - ミクロで勝ててもマクロで勝てない
+- SC2LE (StarCraft II learning environment)
+  - 公式が提供するAPI
+  - スクリプトではなく，深層学習によるAIを組み込めるように
+- AlphaStar
+  - 2018年12月, TLOやMaNaに勝利
+  - オンラインリーグの上位0.2%
+
+Dota 2
+- 2017年8月にDota 2をプレイするAIがOpenAIから発表
+  - 1v1においてはトッププレイヤーにすでに勝利
+- 2018年6月 OpenAI Five がアマチュアチームに勝利
+- 2019年4月 世界チャンピオンに勝利
+- 操作はヒーローごとに独立しており，それぞれが協調して動いている
+- 必要とする資源は計り知れない
+  - 10か月かけて4万5千年分の自己対戦を行った
+- Bot Scripting によるAPIを用いて開発
+  - ゲームとしての設計であるため，クラウド環境での実行など課題があった
+
+マルチエージェントゲーム
+- Capture the Flag, from DeepMind in 2018/7
+- Neural MMO, from OpenAI in 2019/3
+- Google Research Football, from Goole in 2019/6
+- Hide-and-Seek, from OpenAI in 2019/9
+- DeepMind Lab2D, from DeepMind in 2020/12
+  - テキストファイルとLuaスクリプトだけで新しいマルチエージェント環境を構築できる
+- XLand, from DeepMind in 2021/7
