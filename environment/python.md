@@ -24,9 +24,10 @@ pyenv
 - pythonの場所確認: `pyenv which {python}`
 - pyenvを使うと，コマンドは`python`になる(`python3`ではない)
 
-poetry
+### poetry
 - 自身のアップデート: `poetry self update`
 - プロジェクト作成: `poetry new {project-name}`
+  - `{project-name}`のディレクトリと最低限のファイルを生成
   - 既存の物がある場合: `poetry init`
 - パッケージのインストール: `poetry add {package-name}`
 - パッケージのアンインストール: `poetry remove {package-name}`
@@ -34,6 +35,7 @@ poetry
   - 確認したい場合は `--dry-run`
 - パッケージ一覧: `poetry show`
 - 環境内でPythonバージョンを指定: `poetry env use {version}`
+  - 実行時に使用されるバージョンを指定するだけで，依存関係は変わらないことに注意
 - セットアップ: `poetry install`
   - 開発で使うパッケージがいらないなら `--no-dev`
 - 仮想環境での実行: `poetry run python {file}`

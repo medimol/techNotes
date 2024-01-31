@@ -1,6 +1,6 @@
 # LaTeX
 ## Basics
-- TeX: Donald Ervin Knuth によって開発された組版システム (文字や図版などの要素を紙面に配置するシステム)
+- TeX: Donald Ervin Knuth によって開発された組版(くみはん)システム (文字や図版などの要素を紙面に配置するシステム)
 - LaTeX: Lesilie Lamport によってTeXの上に構築された文書処理システム
 - pTeX, pLaTeX: TeX、LaTeX をアスキー(現KADOKAWA)が日本語化したもの． p は "publishing" から．
 - upTeX, upLaTeX: pTeX、LaTeX の内部を Unicode 化したもの．
