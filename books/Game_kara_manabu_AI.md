@@ -1186,3 +1186,110 @@ AlphaStarのマルチエージェント学習
   - Elo 200から800まですぐに上昇
   - 最終的に1400
   - 900のエージェントが生成された
+
+### 6章 Minecraftを学ぶAI
+Minecraftを学ぶということ
+- 今までは強化学習よりもそのデータ生成にリソースが使われていた
+  - より効率よく学習させたい
+- 勝敗の概念がなく報酬設定が難しい
+- MineRLの発表 (in 2019/7 by Carnegie Mellon University)
+  - マイクラの強化学習環境
+  - プレイ動画がデモンストレーションとして多数用意されている
+- 環境が毎回ランダムに変化
+- 行動が階層的
+- 複雑なデータをひとまとめにして汎化する
+  - データの削減ができる
+- Malmo
+  - 2016年7月にMicrosoftから発表されたプロジェクト
+  - ミッション定義ファイルによってXMLでミニゲームを作れる
+- AlphaStarによって模倣学習が注目される
+  - MineRLが発足
+- MineRLコンペティション
+  - ダイアモンドを手に入れる課題
+    - アイテムごとに報酬が与えられる
+  - サンプル効率のいい強化学習 (sample efficient reinforcement learning) が主題
+  - マイクラ固有のドメイン知識を用いてはならない
+- 深層強化学習 (hierarchical reinforcement learning)
+ - h-DQN
+  - メタコントローラが達成すべきゴールを決定
+  - コントローラが具体的な行動を決定
+
+k平均法を使って行動空間を小さくする
+- 同じような行動をするベクトルをまとめる
+
+JueWu-MC
+- 8ステージに分割し，それぞれで方策を切り替える
+- メタ方策 (meta-policy)によってステージを判定
+  - 単純な3層のMLP
+  - インベントリで判断
+- サブ方策 (sub-policy)によってステージごとの行動を決定
+  - DQfD (Deep Q-learning from demonstrations): 2017, DQNに模倣学習を追加
+  - SQIL (Soft Q Imitation learning): 2019, 模倣したうえで行動をRLで改善
+  - PPO (Proximal policy optimization): 2017, 方策ベースRL
+- A2RL (action-aware representation learning)
+  - ある行動の後に画像のどの部分が変化するのかをマスクとして学習
+- DSIL (discriminator-based self-imitation learning)
+  - 失敗からも学習する
+  - 識別器 (discriminator)で結果を識別
+- EBS (ensemble behavior cloning with consistency filtering)
+  - 一貫性フィルタリングによる行動クローニングのアンサンブル
+  - 模倣学習のBC (behavior cloning) を拡張し，正確な行動を模倣しやすく
+    - BC: デモンストレーションをそのままマネ
+  - 一貫性フィルタリング
+    - 典型的な行動パターンを切り出した短いデモンストレーションの作成
+  - 行動クローニングのアンサンブル
+    - 複数のネットワークをBCで学習する
+    - それぞれのネットワークで行動を予測し，多数決をとる
+
+BASALTコンペティション
+- 2021年から始まったMineRLのコンペ
+- 強化学習の報酬が一切与えられない
+- 目標は文章で与えられる
+- 学習方法
+  - 比較: 人間からのフィードバックを報酬とする
+  - 訂正: フィードバックに具体性を持たせて教師データにする
+- 人間によって評価される
+
+Team KAIROS
+- ハイブリット知能
+  - 機械学習の技術と知識工学の技術
+  - スクリプトも用いる
+  - 状態分類器 (state classifier)
+    - シーンの判別
+  - 推定距離計測 (estimated odometry)
+    - トラッカー計測
+    - スクリプトでの実装
+  - ステートマシン (state-machine)
+    - サブゴールの決定
+
+今後
+- オープンエンドな学習環境
+- XLand: 2017年7月にDeepMindが発表したゲーム環境
+- NetHack Learning Environment
+  - NetHack: 1987年にリリースされたローグライクゲーム
+  - 2020年6月にFacebook AI ResearchがNLEを発表
+- Procgen Benchmark
+  - 2019年12月にOpenAIが発表したミニゲーム
+  - ランダムなマップ生成
+- Minecraft
+  - MineDojo: 新しい学習環境．オープンエンド学習のためのプラットフォーム
+
+発展途上の技術
+- Option-Critic
+  - サブゴールを切り替える
+- マルチホライズン
+  - 異なる時間軸を組み合わせる
+- Pathways
+  - 破局的忘却 (catastrophic forgetting)を解消
+  - 一つのモデルでいくつもの小さなタスクを学習
+  - タスクに応じて部分的にモデルを更新する
+  - 継続学習 (continual learning)
+
+神経科学から
+- 注意 (attention)
+- エピソード記憶 (episodic memory)
+- ワーキングメモリ (working memory)
+
+Gato
+- 2022年5月TranformerベースのAI by DeepMind
+- 一つのアーキテクチャで複数のタスクを学習できる汎用性の高いAI
