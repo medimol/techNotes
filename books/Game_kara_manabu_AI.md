@@ -1,7 +1,7 @@
 # ゲームから学ぶAI 環境シミュレータx深層強化学習で広がる世界
 西田圭介. 株式会社技術評論社. 2022.08.06.
 
-Finish reading at: YYYY.MM.DD
+Finish reading at: 2024.02.26
 
 ###### Purpose
 シミュレーションと深層強化学習について学ぶ．
